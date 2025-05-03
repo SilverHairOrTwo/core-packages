@@ -1,0 +1,39 @@
+name: 'acl'
+
+arch: 'all'
+
+version: '2.3.2'
+
+revision: '1'
+
+description: 'Access control list utilities, libraries and headers'
+
+depends:
+  - 'glibc'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+  - 'attr'
+
+pull: |
+  wget "https://download.savannah.gnu.org/releases/acl/acl-${pkgver}.tar.gz"
+  tar -xf "acl-${pkgver}.tar.gz"
+
+build: |
+  cd "acl-${pkgver}"
+
+  ./configure \
+    --libdir=/usr/lib \
+    --libexecdir=/usr/lib \
+    --prefix=/usr
+
+  # https://gitlab.archlinux.org/archlinux/packaging/packages/acl/-/blob/main/PKGBUILD
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+
+  make -j"${nproc}"
+
+install: |
+  cd "acl-${pkgver}"
+  make DESTDIR="${pkgdir}" install

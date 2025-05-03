@@ -1,0 +1,35 @@
+name: 'libcap'
+
+arch: 'all'
+
+version: '2.76'
+
+revision: '1'
+
+description: 'POSIX 1003.1e capabilities'
+
+depends:
+  - 'glibc'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-${pkgver}.tar.gz"
+  tar -xf "libcap-${pkgver}.tar.gz"
+
+build: |
+  cd "libcap-${pkgver}"
+
+  sed -i '/install -m.*STA/d' libcap/Makefile
+
+  make prefix=/usr lib=lib -j"${nproc}"
+
+install: |
+  cd "libcap-${pkgver}"
+  make DESTDIR="${pkgdir}" prefix=/usr lib=lib install
+  mkdir -p "${pkgdir}"/usr/bin
+  mv "${pkgdir}"/usr/sbin/* "${pkgdir}"/usr/bin
+  rmdir "${pkgdir}"/usr/sbin

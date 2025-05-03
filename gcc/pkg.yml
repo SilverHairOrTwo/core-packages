@@ -1,0 +1,54 @@
+name: 'gcc'
+
+arch: 'all'
+
+version: '15.1.0'
+
+revision: '1'
+
+description: 'The GNU Compiler Collection'
+
+depends:
+  - 'glibc'
+  - 'zlib'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'zlib'
+  - 'make'
+  - 'libmpc'
+
+pull: |
+  wget "https://ftp.gnu.org/gnu/gcc/gcc-${pkgver}/gcc-${pkgver}.tar.gz"
+  tar -xf "gcc-${pkgver}.tar.gz"
+
+build: |
+  cd "gcc-${pkgver}"
+
+  sed -i '/m64=/s/lib64/lib/' gcc/config/i386/t-linux64
+
+  mkdir -p build && cd build
+
+  ../configure --prefix=/usr \
+     --libdir=/usr/lib \
+     --libexecdir=/usr/lib \
+     --mandir=/usr/share/man \
+     --infodir=/usr/share/info \
+     --enable-languages=c,c++ \
+     --enable-default-pie \
+     --enable-default-ssp \
+     --enable-host-pie \
+     --disable-multilib \
+     --disable-bootstrap \
+     --disable-fixincludes \
+     --with-system-zlib
+
+  make -j"${nproc}"
+
+install: |
+  cd "gcc-${pkgver}/build"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"
+  ln -sv gcc "${pkgdir}"/usr/bin/cc || true
+  ln -sv gcc "${pkgdir}"/usr/bin/cpp || true

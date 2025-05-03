@@ -1,0 +1,27 @@
+name: 'based'
+
+arch: 'any'
+
+version: '0.1'
+
+revision: '1'
+
+description: 'Package manager for Project Based'
+
+depends:
+  - 'bash'
+  - 'gojq'
+  - 'goyq'
+  - 'coreutils'
+  - 'findutils'
+  - 'filesystem'
+
+pull: |
+  wget "https://github.com/SilverHairOrTwo/based/archive/refs/tags/v${pkgver}.tar.gz"
+  tar -xf "v${pkgver}.tar.gz"
+
+install: |
+  cd "based-${pkgver}"
+
+  mkdir -p "${pkgdir}"/usr/bin
+  cp -a ./based{,-install,-remove,-build} "${pkgdir}/usr/bin/"

@@ -1,0 +1,32 @@
+name: 'libisl'
+
+arch: 'all'
+
+version: '0.27'
+
+revision: '1'
+
+description: 'Library for manipulating sets and relations of integer points bounded by linear constraints'
+
+depends:
+  - 'gmp'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://libisl.sourceforge.io/isl-${pkgver}.tar.gz"
+  tar -xf "isl-${pkgver}.tar.gz"
+
+build: |
+  cd "isl-${pkgver}"
+
+  ./configure --prefix=/usr
+
+  make -j"${nproc}"
+
+install: |
+  cd "isl-${pkgver}"
+  make DESTDIR="${pkgdir}" install

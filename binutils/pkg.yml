@@ -1,0 +1,49 @@
+name: 'binutils'
+
+arch: 'all'
+
+version: '2.44'
+
+revision: '1'
+
+description: 'A set of programs to assemble and manipulate binary and object files'
+
+depends:
+  - 'glibc'
+  - 'zlib'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'zlib'
+  - 'make'
+
+pull: |
+  wget "https://ftp.gnu.org/gnu/binutils/binutils-${pkgver}.tar.gz"
+  tar -xf "binutils-${pkgver}.tar.gz"
+
+build: |
+  cd "binutils-${pkgver}"
+
+  mkdir -p build && cd build
+
+  ../configure --prefix=/usr \
+    --sysconfdir=/etc \
+    --enable-ld=default \
+    --enable-plugins \
+    --enable-shared \
+    --disable-werror \
+    --enable-64-bit-bfd \
+    --enable-new-dtags \
+    --with-system-zlib \
+    --with-debuginfod=no \
+    --enable-default-hash-style=gnu
+
+  make tooldir=/usr -j"${nproc}"
+
+  make -k check
+
+install: |
+  cd "binutils-${pkgver}/build"
+  make DESTDIR="${pkgdir}" tooldir=/usr install
+  rm -f "${pkgdir}/usr/share/info/dir"

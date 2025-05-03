@@ -1,0 +1,35 @@
+name: 'libmpc'
+
+arch: 'all'
+
+version: '1.3.1'
+
+revision: '1'
+
+description: 'Library for the arithmetic of complex numbers with arbitrarily high precision'
+
+depends:
+  - 'gmp'
+  - 'mpfr'
+  - 'glibc'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://ftp.gnu.org/gnu/mpc/mpc-${pkgver}.tar.gz"
+  tar -xf "mpc-${pkgver}.tar.gz"
+
+build: |
+  cd "mpc-${pkgver}"
+
+  ./configure --prefix=/usr
+
+  make -j"${nproc}"
+
+install: |
+  cd "mpc-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"

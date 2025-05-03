@@ -1,0 +1,42 @@
+name: 'coreutils'
+
+arch: 'all'
+
+version: '9.7'
+
+revision: '1'
+
+description: 'The basic file, shell and text manipulation utilities of the GNU operating system'
+
+depends:
+  - 'acl'
+  - 'attr'
+  - 'glibc'
+  - 'gmp'
+  - 'libcap'
+  - 'openssl'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://ftp.gnu.org/gnu/coreutils/coreutils-${pkgver}.tar.gz"
+  tar -xf "coreutils-${pkgver}.tar.gz"
+
+build: |
+  cd "coreutils-${pkgver}"
+
+  ./configure \
+    --prefix=/usr \
+    --libexecdir=/usr/lib \
+    --with-openssl \
+    --enable-no-install-program=hostname,kill,uptime
+
+  make -j"${nproc}"
+
+install: |
+  cd "coreutils-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"

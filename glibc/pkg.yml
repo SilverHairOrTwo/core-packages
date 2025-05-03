@@ -1,0 +1,73 @@
+name: 'glibc'
+
+arch: 'all'
+
+version: '2.41'
+
+revision: '1'
+
+description: 'The GNU C Library.'
+
+depends:
+  - 'filesystem'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://ftp.gnu.org/gnu/glibc/glibc-${pkgver}.tar.gz"
+  tar -xf "glibc-${pkgver}.tar.gz"
+
+build: |
+  cd "glibc-${pkgver}"
+  mkdir -p build && cd build
+
+  echo "slibdir=/usr/lib" >> configparms
+  echo "rtlddir=/usr/lib" >> configparms
+  echo "sbindir=/usr/bin" >> configparms
+  echo "rootsbindir=/usr/bin" >> configparms
+
+  ../configure \
+      --prefix=/usr \
+      --enable-kernel=5.4 \
+      --disable-nscd \
+      --enable-cet \
+      --libdir=/usr/lib \
+      --libexecdir=/usr/lib
+
+  make -j"${nproc}"
+
+  make -C "${pkgsrc}/glibc-${pkgver}"/localedata objdir="${pkgsrc}/glibc-${pkgver}"/build \
+    DESTDIR="${pkgsrc}"/locales install-locale-files
+
+install: |
+  cd "glibc-${pkgver}/build"
+  make DESTDIR="${pkgdir}" install
+
+  cd ..
+
+  # based on https://gitlab.archlinux.org/archlinux/packaging/packages/glibc/-/blob/main/PKGBUILD
+
+  install -dm755 "${pkgdir}"/usr/lib/locale
+  install -m644 posix/gai.conf "${pkgdir}"/etc/gai.conf
+  install -m755 "${pkgorigsrc}"/locale-gen "${pkgdir}"/usr/bin
+
+  # create /etc/locale.gen
+  install -m644 "${pkgorigsrc}"/locale.gen.txt "${pkgdir}"/etc/locale.gen
+  sed -e '1,3d' -e 's|/| |g' -e 's|\\| |g' -e 's|^|#|g' \
+    localedata/SUPPORTED >> "${pkgdir}"/etc/locale.gen
+
+  # Add SUPPORTED file to pkg
+  sed -e '1,3d' -e 's|/| |g' -e 's| \\||g' \
+    localedata/SUPPORTED > "${pkgdir}"/usr/share/i18n/SUPPORTED
+
+  install -dm755 "${pkgdir}"/usr/lib/locale
+  cp -a "${pkgsrc}"/locales/* -t "${pkgdir}"
+
+  rm -f "${pkgdir}/usr/share/info/dir"
+
+install_hook: |
+  ldconfig -r .
+  iconvconfig

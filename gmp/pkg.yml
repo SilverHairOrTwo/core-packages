@@ -1,0 +1,39 @@
+name: 'gmp'
+
+arch: 'all'
+
+version: '6.3.0'
+
+revision: '1'
+
+description: 'A free library for arbitrary precision arithmetic'
+
+depends:
+  - 'gcc'
+  - 'glibc'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://gmplib.org/download/gmp/gmp-${pkgver}.tar.gz"
+  tar -xf "gmp-${pkgver}.tar.gz"
+
+build: |
+  cd "gmp-${pkgver}"
+
+  ./configure --build="$(uname -m)-pc-linux-gnu" \
+    --prefix=/usr \
+    --enable-cxx \
+    --enable-fat
+
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+
+  make -j"${nproc}"
+
+install: |
+  cd "gmp-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"

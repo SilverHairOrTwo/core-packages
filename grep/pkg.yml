@@ -1,0 +1,32 @@
+name: 'grep'
+
+arch: 'all'
+
+version: '3.12'
+
+revision: '1'
+
+description: 'GNU utilities to locate files'
+
+depends:
+  - 'pcre2'
+  - 'glibc'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://ftp.gnu.org/gnu/grep/grep-${pkgver}.tar.xz"
+  tar -xf "grep-${pkgver}.tar.xz"
+
+build: |
+  cd "grep-${pkgver}"
+  ./configure --prefix=/usr
+  make -j"${nproc}"
+
+install: |
+  cd "grep-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"

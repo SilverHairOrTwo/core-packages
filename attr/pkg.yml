@@ -1,0 +1,37 @@
+name: 'attr'
+
+arch: 'all'
+
+version: '2.5.2'
+
+revision: '1'
+
+description: 'Extended attribute support library for ACL support'
+
+depends:
+  - 'glibc'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+  - 'gettext'
+
+pull: |
+  wget "https://download.savannah.gnu.org/releases/attr/attr-${pkgver}.tar.gz"
+  tar -xf "attr-${pkgver}.tar.gz"
+
+build: |
+  cd "attr-${pkgver}"
+
+  ./configure \
+    --libdir=/usr/lib \
+    --libexecdir=/usr/lib \
+    --prefix=/usr \
+    --sysconfdir=/etc
+
+  make -j"${nproc}"
+
+install: |
+  cd "attr-${pkgver}"
+  make DESTDIR="${pkgdir}" install

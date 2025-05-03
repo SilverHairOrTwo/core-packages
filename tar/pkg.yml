@@ -1,0 +1,38 @@
+name: 'tar'
+
+arch: 'all'
+
+version: '1.35'
+
+revision: '1'
+
+description: 'Utility used to store, backup, and transport files'
+
+depends:
+  - 'glibc'
+  - 'acl'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://ftp.gnu.org/gnu/tar/tar-${pkgver}.tar.gz"
+  tar -xf "tar-${pkgver}.tar.gz"
+
+build: |
+  cd "tar-${pkgver}"
+
+  ./configure \
+    --prefix=/usr \
+    --sbindir=/usr/bin \
+    --libexecdir=/usr/lib/tar \
+    --enable-backup-scripts
+
+  make -j"${nproc}"
+
+install: |
+  cd "tar-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"

@@ -1,0 +1,35 @@
+name: 'openssl'
+
+arch: 'all'
+
+version: '3.5.0'
+
+revision: '1'
+
+description: 'The Open Source toolkit for Secure Sockets Layer and Transport Layer Security'
+
+depends:
+  - 'glibc'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://github.com/openssl/openssl/releases/download/openssl-${pkgver}/openssl-${pkgver}.tar.gz"
+  tar -xf "openssl-${pkgver}.tar.gz"
+
+build: |
+  cd "openssl-${pkgver}"
+
+  ./config --prefix=/usr \
+    --openssldir=/etc/ssl \
+    --libdir=lib \
+    shared
+
+  make -j"${nproc}"
+
+install: |
+  cd "openssl-${pkgver}"
+  make DESTDIR="$pkgdir" MANDIR=/usr/share/man MANSUFFIX=ssl install_sw install_ssldirs install_man_docs

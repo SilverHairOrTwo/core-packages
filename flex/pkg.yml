@@ -1,0 +1,33 @@
+name: 'flex'
+
+arch: 'all'
+
+version: '2.6.4'
+
+revision: '1'
+
+description: 'A tool for generating text-scanning programs'
+
+depends:
+  - 'glibc'
+  - 'm4'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://github.com/westes/flex/releases/download/v${pkgver}/flex-${pkgver}.tar.gz"
+  tar -xf "flex-${pkgver}.tar.gz"
+
+build: |
+  cd "flex-${pkgver}"
+  ./configure --prefix=/usr
+  make -j"${nproc}"
+
+install: |
+  cd "flex-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"
+  ln -s flex "${pkgdir}/usr/bin/lex" || true

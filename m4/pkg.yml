@@ -1,0 +1,32 @@
+name: 'm4'
+
+arch: 'all'
+
+version: '1.4.19'
+
+revision: '1'
+
+description: 'The GNU macro processor'
+
+depends:
+  - 'glibc'
+  - 'bash'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://ftp.gnu.org/gnu/m4/m4-${pkgver}.tar.gz"
+  tar -xf "m4-${pkgver}.tar.gz"
+
+build: |
+  cd "m4-${pkgver}"
+  ./configure --prefix=/usr
+  make -j"${nproc}"
+
+install: |
+  cd "m4-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"

@@ -1,0 +1,39 @@
+name: 'findutils'
+
+arch: 'all'
+
+version: '4.10.0'
+
+revision: '1'
+
+description: 'GNU utilities to locate files'
+
+depends:
+  - 'glibc'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://ftp.gnu.org/gnu/findutils/findutils-${pkgver}.tar.xz"
+  tar -xf "findutils-${pkgver}.tar.xz"
+
+build: |
+  cd "findutils-${pkgver}"
+
+  # https://gitlab.archlinux.org/archlinux/packaging/packages/findutils/-/blob/main/PKGBUILD
+
+  sed -e '/^SUBDIRS/s/locate//' -e 's/frcode locate updatedb//' -i Makefile.in
+
+  ./configure --prefix=/usr
+
+  make -C locate dblocation.texi
+
+  make -j"${nproc}"
+
+install: |
+  cd "findutils-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"

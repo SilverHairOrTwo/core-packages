@@ -1,0 +1,36 @@
+name: 'readline'
+
+arch: 'all'
+
+version: '8.2'
+
+revision: '1'
+
+description: 'GNU readline library'
+
+depends:
+  - 'ncurses'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+  - 'ncurses'
+
+pull: |
+  wget "https://ftp.gnu.org/gnu/readline/readline-${pkgver}.tar.gz"
+  tar -xf "readline-${pkgver}.tar.gz"
+
+build: |
+  cd "readline-${pkgver}"
+
+  ./configure \
+      --prefix=/usr \
+      --disable-static
+
+  make SHLIB_LIBS="-lncursesw" -j"${nproc}"
+
+install: |
+  cd "readline-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"

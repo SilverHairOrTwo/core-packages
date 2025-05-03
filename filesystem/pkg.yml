@@ -1,0 +1,22 @@
+name: 'filesystem'
+
+arch: 'any'
+
+version: '0.1'
+
+revision: '1'
+
+description: 'Base filesystem'
+
+install: |
+  mkdir -p "${pkgdir}"/usr/{bin,include,lib,local,share}
+
+  ln -s lib "${pkgdir}"/usr/lib64
+  ln -s bin "${pkgdir}"/usr/sbin
+
+  mkdir -p "${pkgdir}"/{boot,dev,etc,home,mnt,opt,proc,root,run,srv,sys,var}
+
+  ln -s usr/bin "${pkgdir}"/bin
+  ln -s usr/bin "${pkgdir}"/sbin
+  ln -s usr/lib "${pkgdir}"/lib
+  ln -s usr/lib "${pkgdir}"/lib64

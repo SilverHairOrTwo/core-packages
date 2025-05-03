@@ -1,0 +1,39 @@
+name: 'gzip'
+
+arch: 'all'
+
+version: '1.14'
+
+revision: '1'
+
+description: 'GNU compression utility'
+
+depends:
+  - 'glibc'
+  - 'bash'
+  - 'coreutils'
+  - 'sed'
+  - 'grep'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://ftp.gnu.org/gnu/gzip/gzip-${pkgver}.tar.gz"
+  tar -xf "gzip-${pkgver}.tar.gz"
+
+build: |
+  cd "gzip-${pkgver}"
+
+  ./configure \
+    --prefix=/usr \
+    --disable-gcc-warnings
+
+  make -j"${nproc}"
+
+install: |
+  cd "gzip-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"

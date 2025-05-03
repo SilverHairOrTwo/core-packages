@@ -1,0 +1,43 @@
+name: 'bash'
+
+arch: 'all'
+
+version: '5.2'
+
+revision: '1'
+
+description: 'The GNU Bourne Again SHell'
+
+depends:
+  - 'ncurses'
+  - 'readline'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+  - 'ncurses'
+  - 'readline'
+
+pull: |
+  wget "https://ftp.gnu.org/gnu/bash/bash-${pkgver}.tar.gz"
+  tar -xf "bash-${pkgver}.tar.gz"
+
+build: |
+  cd "bash-${pkgver}"
+
+  ./configure \
+    --prefix=/usr \
+    --with-curses \
+    --enable-readline \
+    --without-bash-malloc \
+    --with-installed-readline
+
+  make -j"${nproc}"
+
+install: |
+  cd "bash-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"
+  ln -sv bash "${pkgdir}"/usr/bin/sh || true
+  ln -sv bash "${pkgdir}"/usr/bin/rbash || true

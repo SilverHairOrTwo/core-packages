@@ -1,0 +1,49 @@
+name: 'goyq'
+
+arch: 'all'
+
+version: '4.45.2'
+
+revision: '1'
+
+description: 'Portable command-line YAML processor'
+
+depends:
+  - 'glibc'
+
+makedepends:
+  - 'go'
+  - 'wget'
+
+conflicts:
+  - 'yq'
+
+pull: |
+  wget "https://github.com/mikefarah/yq/archive/refs/tags/v${pkgver}.tar.gz"
+  tar -xf "v${pkgver}.tar.gz"
+
+build: |
+  cd "yq-${pkgver}"
+
+  go build \
+    -trimpath \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-linkmode external -extldflags \"${LDFLAGS}\"" \
+    .
+
+install: |
+  cd "yq-${pkgver}"
+
+  # https://gitlab.archlinux.org/archlinux/packaging/packages/go-yq/-/blob/main/PKGBUILD
+
+  install -Dt "$pkgdir"/usr/bin yq
+  install -Dm644 -t "$pkgdir"/usr/share/doc/$pkgname README.md
+
+  ./yq shell-completion bash | install -Dm644 /dev/stdin \
+    "$pkgdir"/usr/share/bash-completion/completions/yq
+  ./yq shell-completion zsh | install -Dm644 /dev/stdin \
+    "$pkgdir"/usr/share/zsh/site-functions/_yq
+  ./yq shell-completion fish | install -Dm644 /dev/stdin \
+    "$pkgdir"/usr/share/fish/vendor_completions.d/yq.fish

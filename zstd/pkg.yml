@@ -1,0 +1,34 @@
+name: 'zstd'
+
+arch: 'all'
+
+version: '1.5.7'
+
+revision: '1'
+
+description: 'Zstandard - Fast real-time compression algorithm'
+
+depends:
+  - 'glibc'
+  - 'gcc'
+  - 'zlib'
+  - 'xz'
+  - 'lz4'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://github.com/facebook/zstd/releases/download/v${pkgver}/zstd-${pkgver}.tar.zst"
+  tar -xf "zstd-${pkgver}.tar.zst"
+
+build: |
+  cd "zstd-${pkgver}"
+  make prefix=/usr -j"${nproc}"
+
+install: |
+  cd "zstd-${pkgver}"
+  make DESTDIR="${pkgdir}" prefix=/usr install
+  rm -v "${pkgdir}"/usr/lib/libzstd.a

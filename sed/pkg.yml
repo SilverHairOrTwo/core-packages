@@ -1,0 +1,34 @@
+name: 'sed'
+
+arch: 'all'
+
+version: '4.9'
+
+revision: '1'
+
+description: 'GNU stream editor'
+
+depends:
+  - 'glibc'
+  - 'acl'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://ftp.gnu.org/gnu/sed/sed-${pkgver}.tar.gz"
+  tar -xf "sed-${pkgver}.tar.gz"
+
+build: |
+  cd "sed-${pkgver}"
+
+  ./configure --prefix=/usr
+
+  make -j"${nproc}"
+
+install: |
+  cd "sed-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"

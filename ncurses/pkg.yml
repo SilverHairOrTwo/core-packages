@@ -1,0 +1,43 @@
+name: 'ncurses'
+
+arch: 'all'
+
+version: '6.5'
+
+revision: '1'
+
+description: 'System V Release 4.0 curses emulation library'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://ftp.gnu.org/gnu/ncurses/ncurses-${pkgver}.tar.gz"
+  tar -xf "ncurses-${pkgver}.tar.gz"
+
+build: |
+  cd "ncurses-${pkgver}"
+
+  ./configure \
+      --prefix=/usr \
+      --mandir=/usr/share/man \
+      --with-shared \
+      --without-debug \
+      --without-normal \
+      --with-cxx-shared \
+      --enable-pc-files \
+      --with-versioned-syms \
+      --with-pkg-config-libdir=/usr/lib/pkgconfig
+
+  make -j"${nproc}"
+
+install: |
+  cd "ncurses-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+
+  for lib in ncurses ncurses++ form panel menu; do
+    printf "INPUT(-l%sw)\n" "${lib}" > "${pkgdir}/usr/lib/lib${lib}.so"
+    ln -sv ${lib}w.pc "${pkgdir}/usr/lib/pkgconfig/${lib}.pc"
+  done
