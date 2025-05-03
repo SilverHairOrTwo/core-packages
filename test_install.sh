@@ -2,20 +2,24 @@
 
 cd "$(dirname "$0")"
 
-rm -rf ./test-rootfs || {
-	echo "e: unable to delete old rootfs"
-	echo "   try running as root."
-    exit 1
-}
-mkdir -p ./test-rootfs
-
 for arg in "$@"; do
   if [[ "$arg" == "--build" ]]; then
     build_packages="true"
   elif [[ "$arg" == "--chroot" ]]; then
     change_root="true"
+  elif [[ "$arg" == "--no-gen-rootfs" ]]; then
+    no_gen_rootfs="true"
   fi
 done
+
+if [[ "$no_gen_rootfs" != "true" ]]; then
+  rm -rf ./test-rootfs || {
+    echo "e: unable to delete old rootfs"
+    echo "   try running as root."
+    exit 1
+  }
+  mkdir -p ./test-rootfs
+fi
 
 if [[ "$build_packages" == "true" ]]; then
   if [[ "$EUID" -eq 0 ]] && [[ ! -z "$SUDO_USER" ]]; then
@@ -36,7 +40,9 @@ if [[ "$build_packages" == "true" ]]; then
   done
 fi
 
-BASED_NONINTERACTIVE=true DESTDIR=./test-rootfs ./based/.based_build/pkg/contents/usr/bin/based install **/*.based.tgz
+if [[ "$no_gen_rootfs" != "true" ]]; then
+  BASED_NONINTERACTIVE=true DESTDIR=./test-rootfs ./based/.based_build/pkg/contents/usr/bin/based install **/*.based.tgz
+fi
 
 if [[ "$change_root" == "true" ]]; then
   if which systemd-nspawn &>/dev/null; then
