@@ -1,0 +1,37 @@
+name: 'libpsl'
+
+arch: 'all'
+
+version: '0.21.5'
+
+revision: '1'
+
+description: 'Public Suffix List library'
+
+depends:
+  - 'libidn2'
+  - 'libunistring'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://github.com/rockdaboot/libpsl/releases/download/${pkgver}/libpsl-${pkgver}.tar.gz"
+  tar -xf "libpsl-${pkgver}.tar.gz"
+
+build: |
+  cd "libpsl-${pkgver}"
+  ./configure \
+    --prefix=/usr \
+    --disable-static \
+    --disable-dependency-tracking \
+    --enable-man \
+    --disable-gtk-doc \
+    --enable-{builtin,runtime}=libidn2
+  LC_CTYPE=en_US.UTF-8 make -j"${nproc}"
+
+install: |
+  cd "libpsl-${pkgver}"
+  make DESTDIR="${pkgdir}" install

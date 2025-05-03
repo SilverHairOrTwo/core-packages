@@ -1,0 +1,33 @@
+name: 'libidn2'
+
+arch: 'all'
+
+version: '2.3.7'
+
+revision: '1'
+
+description: 'Free software implementation of IDNA2008, Punycode and TR46'
+
+depends:
+  - 'libunistring'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://ftp.gnu.org/gnu/libidn/libidn2-${pkgver}.tar.gz"
+  tar -xf "libidn2-${pkgver}.tar.gz"
+
+build: |
+  cd "libidn2-${pkgver}"
+
+  ./configure --prefix=/usr --disable-static
+
+  make -j"${nproc}"
+
+install: |
+  cd "libidn2-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"

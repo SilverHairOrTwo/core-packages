@@ -1,0 +1,32 @@
+name: 'make'
+
+arch: 'all'
+
+version: '4.4.1'
+
+revision: '1'
+
+description: 'GNU make utility to maintain groups of programs'
+
+depends:
+  - 'glibc'
+  - 'guile'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://ftp.gnu.org/pub/gnu/make/make-${pkgver}.tar.gz"
+  tar -xf "make-${pkgver}.tar.gz"
+
+build: |
+  cd "make-${pkgver}"
+  ./configure --prefix=/usr
+  make -j"${nproc}"
+
+install: |
+  cd "make-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"

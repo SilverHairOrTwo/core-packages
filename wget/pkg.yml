@@ -1,0 +1,35 @@
+name: 'wget'
+
+arch: 'all'
+
+version: '1.25.0'
+
+revision: '1'
+
+description: 'Network utility to retrieve files from the web'
+
+depends:
+  - 'glibc'
+  - 'libpsl'
+  - 'openssl'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://ftp.gnu.org/pub/gnu/wget/wget-${pkgver}.tar.gz"
+  tar -xf "wget-${pkgver}.tar.gz"
+
+build: |
+  cd "wget-${pkgver}"
+  ./configure --prefix=/usr \
+    --sysconfdir=/etc \
+    --with-ssl=openssl
+  make -j"${nproc}"
+
+install: |
+  cd "wget-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"

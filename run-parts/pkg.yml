@@ -1,0 +1,32 @@
+name: 'run-parts'
+
+arch: 'all'
+
+version: '5.22'
+
+revision: '1'
+
+description: 'Run scripts or programs in a directory'
+
+depends:
+  - 'glibc'
+
+makedepends:
+  - 'gcc'
+  - 'make'
+  - 'wget'
+  - 'autoconf'
+
+pull: |
+  wget "https://deb.debian.org/debian/pool/main/d/debianutils/debianutils_${pkgver}.tar.xz"
+  tar -xf "debianutils_${pkgver}.tar.xz"
+
+build: |
+  cd "debianutils-${pkgver}"
+  autoreconf -vfi
+  ./configure --prefix=/usr
+  make run-parts
+
+install: |
+  cd "debianutils-${pkgver}"
+  install -D -m755 run-parts "${pkgdir}/usr/bin/run-parts"

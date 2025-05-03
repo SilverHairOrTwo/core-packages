@@ -1,0 +1,40 @@
+name: 'guile'
+
+arch: 'all'
+
+version: '3.0.10'
+
+revision: '1'
+
+description: 'Portable, embeddable Scheme implementation written in C'
+
+depends:
+  - 'gc'
+  - 'gmp'
+  - 'ncurses'
+  - 'libunistring'
+  - 'libffi'
+  - 'libxcrypt'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://ftp.gnu.org/pub/gnu/guile/guile-${pkgver}.tar.xz"
+  tar -xf "guile-${pkgver}.tar.xz"
+
+build: |
+  cd "guile-${pkgver}"
+
+  ./configure --prefix=/usr \
+    --disable-static  \
+    --disable-error-on-warning
+
+  make -j"${nproc}"
+
+install: |
+  cd "guile-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"

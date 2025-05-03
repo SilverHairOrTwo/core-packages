@@ -1,0 +1,33 @@
+name: 'libtasn1'
+
+arch: 'all'
+
+version: '4.20.0'
+
+revision: '1'
+
+description: 'The ASN.1 library used in GNUTLS'
+
+depends:
+  - 'glibc'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://ftp.gnu.org/gnu/libtasn1/libtasn1-${pkgver}.tar.gz"
+  tar -xf "libtasn1-${pkgver}.tar.gz"
+
+build: |
+  cd "libtasn1-${pkgver}"
+
+  ./configure --prefix=/usr
+
+  make -j"${nproc}"
+
+install: |
+  cd "libtasn1-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"

@@ -1,0 +1,37 @@
+name: 'libxcrypt'
+
+arch: 'all'
+
+version: '4.4.38'
+
+revision: '1'
+
+description: 'Library for manipulating Unicode strings and C strings'
+
+depends:
+  - 'glibc'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://github.com/besser82/libxcrypt/releases/download/v${pkgver}/libxcrypt-${pkgver}.tar.xz"
+  tar -xf "libxcrypt-${pkgver}.tar.xz"
+
+build: |
+  cd "libxcrypt-${pkgver}"
+
+  ./configure \
+    --prefix=/usr \
+    --disable-static \
+    --enable-hashes=strong,glibc \
+    --enable-obsolete-api=no \
+    --disable-failure-tokens
+
+  make -j"${nproc}"
+
+install: |
+  cd "libxcrypt-${pkgver}"
+  make DESTDIR="${pkgdir}" install

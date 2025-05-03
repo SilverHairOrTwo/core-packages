@@ -1,0 +1,30 @@
+name: 'gc'
+
+arch: 'all'
+
+version: '8.2.8'
+
+revision: '1'
+
+description: 'A garbage collector for C and C++'
+
+depends:
+  - 'gcc'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://www.hboehm.info/gc/gc_source/gc-${pkgver}.tar.gz"
+  tar -xf "gc-${pkgver}.tar.gz"
+
+build: |
+  cd "gc-${pkgver}"
+  ./configure --prefix=/usr --enable-cplusplus --disable-static
+  make -j"${nproc}"
+
+install: |
+  cd "gc-${pkgver}"
+  make DESTDIR="${pkgdir}" install

@@ -1,0 +1,35 @@
+name: 'p11-kit'
+
+arch: 'all'
+
+version: '0.25.5'
+
+revision: '1'
+
+description: 'Loads and enumerates PKCS#11 modules'
+
+depends:
+  - 'glibc'
+  - 'coreutils'
+  - 'libtasn1'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+  - 'libffi'
+
+pull: |
+  wget "https://github.com/p11-glue/p11-kit/releases/download/${pkgver}/p11-kit-${pkgver}.tar.xz"
+  tar -xf "p11-kit-${pkgver}.tar.xz"
+
+build: |
+  cd "p11-kit-${pkgver}"
+
+  ./configure --prefix=/usr --without-systemd
+
+  make -j"${nproc}"
+
+install: |
+  cd "p11-kit-${pkgver}"
+  make DESTDIR="${pkgdir}" install

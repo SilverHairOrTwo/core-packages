@@ -1,0 +1,33 @@
+name: 'libunistring'
+
+arch: 'all'
+
+version: '1.3'
+
+revision: '1'
+
+description: 'Library for manipulating Unicode strings and C strings'
+
+depends:
+  - 'glibc'
+
+makedepends:
+  - 'gcc'
+  - 'wget'
+  - 'make'
+
+pull: |
+  wget "https://ftp.gnu.org/gnu/libunistring/libunistring-${pkgver}.tar.gz"
+  tar -xf "libunistring-${pkgver}.tar.gz"
+
+build: |
+  cd "libunistring-${pkgver}"
+
+  ./configure --prefix=/usr
+
+  make -j"${nproc}"
+
+install: |
+  cd "libunistring-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+  rm -f "${pkgdir}/usr/share/info/dir"
